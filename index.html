@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma to KQL Converter with ECS Mapping</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section with Fixed Grid Layout -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>Professional Sigma to KQL Converter</h1>
+                    <p class="subtitle">Production-Ready ECS Field Mapping & Complex Condition Support</p>
+                    <p class="description">Comprehensive SOC tool for converting Sigma detection rules to ECS-compliant KQL queries. Handles complex conditions, array parsing, and 70+ field mappings for Kibana/Elasticsearch.</p>
+                </div>
+                <div class="header-controls">
+                    <button id="themeToggle" class="btn btn--outline theme-toggle" title="Toggle Dark/Light Mode">
+                        🌙
+                    </button>
+                    <button id="toggleEcsPanel" class="btn btn--secondary ecs-toggle">ECS Reference</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Application Layout -->
+        <div class="main-layout">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <div class="panel-header">
+                    <h2>Sigma Rule Input</h2>
+                    <div class="input-controls">
+                        <select id="sampleSelector" class="form-control sample-selector">
+                            <option value="">Select a sample rule...</option>
+                        </select>
+                        <input type="file" id="fileUpload" accept=".yml,.yaml" class="hidden">
+                        <button id="uploadBtn" class="btn btn--secondary">Upload File</button>
+                        <button id="clearBtn" class="btn btn--outline">Clear</button>
+                    </div>
+                </div>
+                <div class="input-content">
+                    <textarea id="sigmaInput" class="form-control sigma-input" placeholder="Paste your Sigma rule here in YAML format...
+
+Test with the AccCheckConsole sample that includes:
+- Complex 'all of selection_*' conditions
+- Array handling for multiple values
+- OriginalFileName → process.pe.original_file_name mapping
+
+Or try other samples with PE headers, DNS queries, cloud events, etc."></textarea>
+                    <div class="validation-status">
+                        <span id="validationIndicator" class="status status--info hidden">Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    <h2>Clean KQL Query Output</h2>
+                    <div class="output-controls">
+                        <button id="copyBtn" class="btn btn--primary" disabled>Copy to Clipboard</button>
+                        <button id="downloadBtn" class="btn btn--secondary" disabled>Download .kql</button>
+                    </div>
+                </div>
+                <div class="output-content">
+                    <pre id="kqlOutput" class="kql-output">Your converted KQL query will appear here...
+
+✓ Clean, copy-paste ready KQL queries
+✓ No HTML tags or broken formatting  
+✓ Professional boolean operators (and, or, not)
+✓ Proper field syntax and escaping
+✓ Complex condition support (all of selection_*, 1 of selection_*, etc.)</pre>
+                    <div class="conversion-status">
+                        <span id="conversionIndicator" class="status status--info hidden">Ready to convert</span>
+                    </div>
+                </div>
+                <div class="field-mapping-summary hidden" id="fieldMappingSummary">
+                    <h3>Field Mappings Applied</h3>
+                    <div id="mappingsList" class="mappings-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Options Panel -->
+        <div class="options-panel">
+            <div class="options-header">
+                <h3>Advanced Conversion Options</h3>
+                <button id="toggleOptions" class="btn btn--outline">Show Advanced Options</button>
+            </div>
+            <div class="options-content" id="optionsContent">
+                <div class="options-grid">
+                    <div class="option-group">
+                        <label class="form-label" for="ecsVersion">ECS Version</label>
+                        <select id="ecsVersion" class="form-control">
+                            <option value="8.x" selected>ECS 8.x (Recommended)</option>
+                            <option value="9.x">ECS 9.x (Beta)</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label class="form-label" for="targetPlatform">Target Platform</label>
+                        <select id="targetPlatform" class="form-control">
+                            <option value="elasticsearch" selected>Elasticsearch/Kibana</option>
+                            <option value="azure-sentinel">Azure Sentinel KQL</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label class="form-label">
+                            <input type="checkbox" id="includeUnmapped" checked> Include Unmapped Fields
+                        </label>
+                    </div>
+                    <div class="option-group">
+                        <label class="form-label">
+                            <input type="checkbox" id="optimizeQuery" checked> Optimize Query Performance
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ECS Field Reference Panel -->
+        <div class="ecs-panel hidden" id="ecsPanel">
+            <div class="panel-header">
+                <h2>Comprehensive ECS Field Reference</h2>
+                <button id="closeEcsPanel" class="btn btn--outline">×</button>
+            </div>
+            <div class="ecs-content">
+                <div class="search-container">
+                    <input type="text" id="fieldSearch" class="form-control" placeholder="Search 70+ ECS fields (process.pe.original_file_name, etc.)...">
+                </div>
+                <div class="field-stats">
+                    <p class="stats-text">
+                        <strong>Complete ECS Coverage:</strong> Process & PE Headers, Network, File System, DNS, Authentication, Registry, Host, Events, Cloud, Container, URL, Email fields
+                    </p>
+                    <p class="stats-text">
+                        <strong>Critical Mappings Fixed:</strong> OriginalFileName → process.pe.original_file_name, Image → process.executable, Company → process.pe.company
+                    </p>
+                </div>
+                <div class="field-categories" id="fieldCategories">
+                    <!-- Field categories will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Statistics Panel -->
+        <div class="stats-panel">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">70+</div>
+                    <div class="stat-label">ECS Field Mappings</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">✓</div>
+                    <div class="stat-label">Array Handling Fixed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">✓</div>
+                    <div class="stat-label">Complex Conditions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">✓</div>
+                    <div class="stat-label">Production Ready</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Error Messages -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Error</h3>
+                <button id="closeModal" class="btn btn--outline">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
