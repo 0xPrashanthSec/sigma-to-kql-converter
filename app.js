@@ -1,5 +1,45 @@
+/*!
+ * Sigma to KQL Converter with ECS Mapping
+ * Production-Ready Security Tool for SOC Teams
+ * 
+ * @author     Saiprashanth Pulisetti
+ * @role       SOC Team Lead & Security Researcher  
+ * @version    2.0.0
+ * @created    2025
+ * @license    MIT
+ * 
+ * @description
+ * A comprehensive web application for converting Sigma detection rules 
+ * to Kibana Query Language (KQL) with complete Elastic Common Schema (ECS) 
+ * field mapping support. Features 100+ field mappings, advanced condition 
+ * processing, and production-ready parsing capabilities.
+ * 
+ * Key Features:
+ * - PowerShell field mapping (Payload → powershell.command.script_block_text)
+ * - Process PE fields (OriginalFileName → process.pe.original_file_name)
+ * - Complex array handling (eliminates "[object Object]" errors)
+ * - Advanced condition processing (all of selection_*, 1 of selection_*)
+ * - Clean KQL output generation
+ * 
+ * @repository https://github.com/saiprashanth-pulisetti/sigma-to-kql-converter
+ */
+
+// PRODUCTION-READY SIGMA TO KQL CONVERTER
+// Complete implementation with all critical fixes and comprehensive ECS mappings
+// Author: Saiprashanth Pulisetti - SOC Team Lead
+
 // CRITICAL FIXES: Comprehensive ECS mappings with PowerShell fields and all issues resolved
 const APPLICATION_DATA = {
+        // Application metadata
+    appInfo: {
+        name: "Sigma to KQL Converter with ECS Mapping",
+        version: "2.0.0",
+        author: "Saiprashanth Pulisetti",
+        role: "SOC Team Lead & Security Researcher",
+        created: "2025",
+        license: "MIT",
+        repository: "https://github.com/saiprashanth-pulisetti/sigma-to-kql-converter"
+    },
     comprehensiveECSMappings: {
         // CRITICAL: PowerShell Fields (FIXED - was missing entirely!)
         "Payload": "powershell.command.script_block_text", // CRITICAL PowerShell mapping
