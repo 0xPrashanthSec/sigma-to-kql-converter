@@ -1,9 +1,8 @@
 /*!
  * Sigma to KQL Converter with ECS Mapping
  * Production-Ready Security Tool for SOC Teams
- * 
  * @author     Saiprashanth Pulisetti
- * @role       SOC Team Lead & Security Researcher  
+ * @role       SOC Lead & Security Researcher  
  * @version    2.0.0
  * @created    2025
  * @license    MIT
