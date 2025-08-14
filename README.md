@@ -1,6 +1,6 @@
 
 # Sigma → KQL Converter
-**Production-ready detection-engineering toolkit for the Elastic Stack**
+
 ***
 ## ⚡ What It Does
 Sigma → KQL Converter ingests any Sigma rule (YAML) and instantly produces a clean Kibana Query Language (KQL) query that is:
